@@ -20,10 +20,12 @@
 
         <h1>Rivan Maulana</h1>
         <p class="tagline">Web Developer | Excel VBA Specialist</p>
-        <!-- Tombol Download CV -->
-        <a href="spl/Macro%20Delivery%20Intruction%20Rev.001.xlsm" download class="btn">
-            Download macro order P2 (Excel)
-        </a>
+
+        <!-- Tombol Download Otomatis -->
+        <div id="download-container">
+            <a id="download-btn" href="#" class="btn">Sedang memuat...</a>
+            <p id="version-info" style="margin-top:10px; font-size:14px; color:#eee;"></p>
+        </div>
     </header>
 
     <!-- Tentang Saya -->
@@ -62,7 +64,8 @@
     <section id="contact" class="fade-in">
         <p>Email: <a href="mailto:rivanmaulana2625@gmail.com">rivanmaulana2625@gmail.com</a></p>
         <p>
-            <a href="https://wa.me/6285723000311?text=Halo%20Rivan%2C%20saya%20tertarik%20dengan%20portfolio%20Anda" target="_blank" style="text-decoration:none; color:#25D366; font-weight:600;">
+            <a href="https://wa.me/6285723000311?text=Halo%20Rivan%2C%20saya%20tertarik%20dengan%20portfolio%20Anda" 
+               target="_blank" style="text-decoration:none; color:#25D366; font-weight:600;">
                 <i class="fab fa-whatsapp"></i> Chat via WhatsApp
             </a>
         </p>
@@ -85,6 +88,40 @@
         }, { threshold: 0.2 });
 
         elements.forEach(el => observer.observe(el));
+    </script>
+
+    <!-- Script ambil file Excel terbaru dari GitHub -->
+    <script>
+        const repoOwner = "Rivan311";
+        const repoName = "cv-Rivan";
+        const folderPath = "spl";
+
+        fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`)
+            .then(response => response.json())
+            .then(files => {
+                const excelFiles = files.filter(f => f.name.endsWith('.xlsm'));
+
+                if (excelFiles.length === 0) throw new Error("Tidak ada file .xlsm ditemukan.");
+
+                // Urutkan versi berdasar nama file (yang terbaru di akhir)
+                excelFiles.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+
+                const latest = excelFiles[excelFiles.length - 1];
+
+                // Update tombol dan versi info
+                const btn = document.getElementById("download-btn");
+                const info = document.getElementById("version-info");
+
+                btn.href = latest.download_url;
+                btn.textContent = `Download ${latest.name}`;
+                btn.setAttribute("download", latest.name);
+
+                info.textContent = `Versi terbaru: ${latest.name}`;
+            })
+            .catch(err => {
+                console.error("Gagal memuat file:", err);
+                document.getElementById("download-btn").textContent = "File tidak ditemukan";
+            });
     </script>
 
 </body>
